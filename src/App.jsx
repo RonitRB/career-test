@@ -438,7 +438,7 @@ function topCareerMatches(phase1, life) {
 
 function QuestionCard({ question, value, onChange, onMoveUp, onMoveDown, allowReorder }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="w-full min-w-0 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
       <p className="text-[15px] font-medium leading-6 text-slate-900">{question.prompt}</p>
 
       <div className="mt-4 space-y-3">
@@ -687,9 +687,9 @@ export default function SonuCareerAssessment() {
             </p>
           </div>
 
-          <div className="grid gap-6 p-5 md:p-8 xl:grid-cols-[1.1fr_0.9fr]">
+          <div className="grid w-full min-w-0 gap-6 p-5 md:p-8 xl:grid-cols-[1.1fr_0.9fr]">
             <div className="w-full min-w-0 space-y-6">
-              <section className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
+              <section className="w-full min-w-0 rounded-3xl border border-slate-200 bg-slate-50 p-5">
                 <h2 className="text-lg font-semibold">Respondent details</h2>
                 <p className="mt-1 text-sm text-slate-600">This helps you identify the submission later.</p>
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -700,7 +700,7 @@ export default function SonuCareerAssessment() {
                 </div>
               </section>
 
-              <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <section className="w-full min-w-0 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <h2 className="text-2xl font-semibold">PHASE 1: General Career Personality Assessment</h2>
@@ -730,7 +730,7 @@ export default function SonuCareerAssessment() {
                 </div>
               </section>
 
-              <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <section className="w-full min-w-0 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
                 <h2 className="text-2xl font-semibold">PHASE 2: Sonu's Personalized Life & Career Assessment</h2>
                 <p className="mt-2 text-sm text-slate-600">Only after Phase 1.</p>
 
@@ -822,7 +822,7 @@ export default function SonuCareerAssessment() {
             </div>
 
             <aside className="w-full min-w-0 space-y-6 xl:sticky xl:top-6 xl:h-fit">
-              <section className="rounded-3xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+              <section className="w-full min-w-0 rounded-3xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
                 <h2 className="text-lg font-semibold">Live snapshot for you</h2>
                 <p className="mt-1 text-sm text-slate-600">Sonu will not see this panel.</p>
                 <div className="mt-5 grid grid-cols-2 gap-3">
@@ -860,7 +860,7 @@ export default function SonuCareerAssessment() {
                 </div>
               </section>
 
-              <section className="rounded-3xl border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
+              <section className="w-full min-w-0 rounded-3xl border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
                 <h3 className="text-lg font-semibold">Deployment note</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-300">
                   Set <code className="rounded bg-white/10 px-1 py-0.5">VITE_RESULTS_WEBHOOK_URL</code> to your own endpoint.
