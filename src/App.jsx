@@ -900,9 +900,6 @@ export default function SonuCareerAssessment() {
           <p className="mt-3 text-sm text-slate-500">
             Your responses have been securely submitted and will be analyzed privately.
           </p>
-          <p className="mt-4 text-sm text-slate-500">
-            Owner tip: open this page with <code className="rounded bg-slate-100 px-1 py-0.5 text-slate-900">?admin=1</code> to review the stored result later.
-          </p>
         </div>
       </div>
     );
@@ -1068,9 +1065,6 @@ export default function SonuCareerAssessment() {
                 <p className="mt-2 text-sm leading-6">
                   Sonu only answers the questions. No career matches or scores are shown here.
                   The results are sent privately to your webhook for later analysis.
-                </p>
-                <p className="mt-4 rounded-2xl bg-slate-950 px-4 py-3 text-sm text-white">
-                  Owner view: add <code className="rounded bg-white/10 px-1 py-0.5">?admin=1</code> to the page URL to review the latest stored result.
                 </p>
               </section>
 
