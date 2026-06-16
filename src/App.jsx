@@ -688,7 +688,7 @@ export default function SonuCareerAssessment() {
           </div>
 
           <div className="grid gap-6 p-5 md:p-8 xl:grid-cols-[1.1fr_0.9fr]">
-            <div className="space-y-6">
+            <div className="w-full min-w-0 space-y-6">
               <section className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
                 <h2 className="text-lg font-semibold">Respondent details</h2>
                 <p className="mt-1 text-sm text-slate-600">This helps you identify the submission later.</p>
@@ -821,7 +821,7 @@ export default function SonuCareerAssessment() {
               </div>
             </div>
 
-            <aside className="space-y-6 xl:sticky xl:top-6 xl:h-fit">
+            <aside className="w-full min-w-0 space-y-6 xl:sticky xl:top-6 xl:h-fit">
               <section className="rounded-3xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
                 <h2 className="text-lg font-semibold">Live snapshot for you</h2>
                 <p className="mt-1 text-sm text-slate-600">Sonu will not see this panel.</p>
