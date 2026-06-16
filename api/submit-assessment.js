@@ -12,12 +12,30 @@ module.exports = async (req, res) => {
 
     console.log("[submit-assessment] received submission at", payload.submittedAt);
 
+    const GOOGLE_SHEETS_WEBHOOK_URL = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
     const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
     const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
     const AIRTABLE_TABLE = process.env.AIRTABLE_TABLE || "Submissions";
 
-    if (AIRTABLE_API_KEY && AIRTABLE_BASE_ID) {
-      // Prepare fields -- store full JSON in `Payload` and some top-level columns if present
+    if (GOOGLE_SHEETS_WEBHOOK_URL) {
+      // Preferred: forward the payload to a Google Apps Script Web App that writes to Sheets.
+      try {
+        const resp = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!resp.ok) {
+          const text = await resp.text();
+          console.error("[submit-assessment] Google Sheets webhook error:", resp.status, text);
+        } else {
+          console.log("[submit-assessment] forwarded to Google Sheets webhook");
+        }
+      } catch (err) {
+        console.error("[submit-assessment] Google Sheets webhook request failed:", err);
+      }
+    } else if (AIRTABLE_API_KEY && AIRTABLE_BASE_ID) {
+      // Fallback to Airtable if configured
       const fields = {
         SubmittedAt: payload.submittedAt,
         RespondentName: payload.respondent?.name || "",
@@ -50,7 +68,7 @@ module.exports = async (req, res) => {
         console.error("[submit-assessment] Airtable request failed:", err);
       }
     } else {
-      console.log("[submit-assessment] Airtable not configured; skipping persistence.");
+      console.log("[submit-assessment] No external persistence configured; skipping persistence.");
     }
 
     return res.status(200).json({ ok: true });
