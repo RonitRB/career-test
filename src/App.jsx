@@ -683,11 +683,11 @@ export default function SonuCareerAssessment() {
             </div>
             <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">Sonu Career Personality Assessment</h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300 md:text-base">
-              The first phase finds out who she is. The second phase explores what kind of life she actually wants. Nothing is shown to her after submission; only you receive the answers.
+              The first phase finds out who she is. The second phase explores what kind of life she actually wants. No career matches are shown in-app to Sonu; the responses are sent privately for your later analysis.
             </p>
           </div>
 
-          <div className="grid w-full min-w-0 gap-6 p-5 md:p-8 xl:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-6 p-5 md:p-8">
             <div className="w-full min-w-0 space-y-6">
               <section className="w-full min-w-0 rounded-3xl border border-slate-200 bg-slate-50 p-5">
                 <h2 className="text-lg font-semibold">Respondent details</h2>
@@ -821,43 +821,12 @@ export default function SonuCareerAssessment() {
               </div>
             </div>
 
-            <aside className="w-full min-w-0 space-y-6 xl:sticky xl:top-6 xl:h-fit">
-              <section className="w-full min-w-0 rounded-3xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
-                <h2 className="text-lg font-semibold">Live snapshot for you</h2>
-                <p className="mt-1 text-sm text-slate-600">Sonu will not see this panel.</p>
-                <div className="mt-5 grid grid-cols-2 gap-3">
-                  <StatCard label="Social" value={phase1.social} />
-                  <StatCard label="Enterprising" value={phase1.enterprising} />
-                  <StatCard label="Creative" value={phase1.creative} />
-                  <StatCard label="Investigative" value={phase1.investigative} />
-                  <StatCard label="Freedom" value={life.freedom} />
-                  <StatCard label="Travel" value={life.travel} />
-                  <StatCard label="Family" value={life.family} />
-                  <StatCard label="Stability" value={life.stability} />
-                </div>
-              </section>
-
-              <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h3 className="text-lg font-semibold">Generated matches</h3>
-                <p className="mt-1 text-sm text-slate-600">Useful only for your private analysis.</p>
-                <div className="mt-4 space-y-3">
-                  {matches.map((m, idx) => (
-                    <div key={m.name} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-950 text-sm font-semibold text-white">
-                            {idx + 1}
-                          </div>
-                          <div>
-                            <div className="font-medium text-slate-900">{m.name}</div>
-                            <div className="text-xs text-slate-500">Private match score</div>
-                          </div>
-                        </div>
-                        <div className="text-sm font-semibold text-slate-700">{m.score}%</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <section className="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-slate-700">
+                <p className="text-sm font-medium text-slate-900">Option B is enabled.</p>
+                <p className="mt-2 text-sm leading-6">
+                  Sonu only answers the questions. No career matches or scores are shown here.
+                  The results are sent privately to your webhook for later analysis.
+                </p>
               </section>
 
               <section className="w-full min-w-0 rounded-3xl border border-slate-200 bg-slate-950 p-5 text-white shadow-sm">
@@ -867,7 +836,6 @@ export default function SonuCareerAssessment() {
                   The respondent only sees the questionnaire and the final submit confirmation.
                 </p>
               </section>
-            </aside>
           </div>
         </motion.div>
       </div>
@@ -898,11 +866,3 @@ function Field({ label, value, onChange, placeholder }) {
   );
 }
 
-function StatCard({ label, value }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-      <div className="text-xs uppercase tracking-wide text-slate-500">{label}</div>
-      <div className="mt-1 text-2xl font-semibold text-slate-900">{value}</div>
-    </div>
-  );
-}
