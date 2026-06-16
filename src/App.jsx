@@ -742,16 +742,18 @@ function AdminDashboard({ payload, onClose, importJson, setImportJson, onImportJ
 }
 
 function submitPayloadToWebhook(payload) {
-  const webhook = import.meta.env.VITE_RESULTS_WEBHOOK_URL;
-  if (!webhook) {
-    console.warn("No VITE_RESULTS_WEBHOOK_URL configured. Payload:", payload);
-    return Promise.resolve({ ok: true, localOnly: true });
-  }
+  // Prefer an explicit environment-configured webhook, but fall back
+  // to the project's API route so deployments work without extra env setup.
+  const webhook = import.meta.env.VITE_RESULTS_WEBHOOK_URL || "/api/submit-assessment";
 
   return fetch(webhook, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
+  }).catch((err) => {
+    console.warn("Failed to POST payload to webhook:", err);
+    // Fail silently for respondents; owner can still import via admin UI.
+    return { ok: false, error: String(err) };
   });
 }
 
