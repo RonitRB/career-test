@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Send, Sparkles, ShieldAlert, Brain, HeartHandshake, Users, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
 
@@ -266,6 +266,38 @@ function optionLabelFromAnswer(answer) {
   if (!answer) return null;
   const m = String(answer).match(/^([A-F])\./i);
   return m ? m[1].toUpperCase() : null;
+}
+
+const LOCAL_RESULTS_KEY = "sonu-career-assessment-latest-result";
+
+function parseAdminMode() {
+  if (typeof window === "undefined") return false;
+  const params = new URLSearchParams(window.location.search);
+  return params.get("admin") === "1" || params.get("view") === "admin";
+}
+
+function loadLocalResult() {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(LOCAL_RESULTS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveLocalResult(payload) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(LOCAL_RESULTS_KEY, JSON.stringify(payload));
+  } catch {}
+}
+
+function clearLocalResult() {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(LOCAL_RESULTS_KEY);
+  } catch {}
 }
 
 function scorePhase1(answers) {
@@ -554,6 +586,161 @@ function ProgressBar({ current, total }) {
   );
 }
 
+function AdminDashboard({ payload, onClose, importJson, setImportJson, onImportJson, importError, onClearStored }) {
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="mx-auto max-w-6xl px-4 py-10">
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-wide text-slate-500">Private owner view</p>
+            <h1 className="text-3xl font-semibold tracking-tight">Assessment results dashboard</h1>
+            <p className="mt-2 text-sm text-slate-600">
+              Review the last submitted result in this browser, or paste a webhook payload JSON below.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
+            >
+              Respondent view
+            </button>
+            <button
+              type="button"
+              onClick={onClearStored}
+              className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
+            >
+              Clear stored result
+            </button>
+          </div>
+        </div>
+
+        {!payload ? (
+          <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm text-slate-700">
+              No local result is available yet. Submit the assessment once from the respondent view, or paste the webhook payload JSON here.
+            </p>
+            <textarea
+              value={importJson}
+              onChange={(event) => setImportJson(event.target.value)}
+              placeholder="Paste saved webhook payload JSON..."
+              className="min-h-[180px] w-full rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-900 outline-none transition focus:border-slate-400"
+            />
+            {importError && <p className="text-sm text-red-600">{importError}</p>}
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={onImportJson}
+                className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
+              >
+                Load JSON
+              </button>
+              <button
+                type="button"
+                onClick={onClearStored}
+                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-900 transition hover:bg-slate-100"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold">Respondent details</h2>
+                  <p className="mt-1 text-sm text-slate-500">Last stored submission in this browser.</p>
+                </div>
+                <div className="rounded-3xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
+                  Submitted at: {new Date(payload.submittedAt).toLocaleString()}
+                </div>
+              </div>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="text-xs uppercase tracking-wide text-slate-500">Name</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900">{payload.respondent.name || "—"}</div>
+                </div>
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="text-xs uppercase tracking-wide text-slate-500">Age</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900">{payload.respondent.age || "—"}</div>
+                </div>
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="text-xs uppercase tracking-wide text-slate-500">Course</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900">{payload.respondent.currentCourse || "—"}</div>
+                </div>
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="text-xs uppercase tracking-wide text-slate-500">College</div>
+                  <div className="mt-2 text-lg font-semibold text-slate-900">{payload.respondent.college || "—"}</div>
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-2xl font-semibold">Phase 1 profile</h2>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {Object.entries(payload.phase1Profile).map(([label, value]) => (
+                  <div key={label} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="text-xs uppercase tracking-wide text-slate-500">{label}</div>
+                    <div className="mt-2 text-2xl font-semibold text-slate-900">{value}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-2xl font-semibold">Life signals</h2>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                {Object.entries(payload.lifeSignals).map(([label, value]) => (
+                  <div key={label} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="text-xs uppercase tracking-wide text-slate-500">{label}</div>
+                    <div className="mt-2 text-2xl font-semibold text-slate-900">{value}</div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-2xl font-semibold">Top career matches</h2>
+              <div className="mt-4 space-y-3">
+                {payload.topCareerMatches.map((match, index) => (
+                  <div key={match.name} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-semibold text-slate-900">{index + 1}. {match.name}</div>
+                        <div className="text-xs text-slate-500">Private match score</div>
+                      </div>
+                      <div className="text-lg font-semibold text-slate-900">{match.score}%</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between gap-4">
+                <h2 className="text-2xl font-semibold">Raw answers</h2>
+                <span className="text-sm text-slate-500">For careful review</span>
+              </div>
+              <div className="mt-4 grid gap-4">
+                {phase1Questions.concat(phase2Questions).map((question) => (
+                  <div key={question.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="text-sm font-semibold text-slate-900">{question.prompt}</div>
+                    <div className="mt-2 text-sm leading-6 text-slate-700 whitespace-pre-wrap">
+                      {String(payload.answers[question.id] ?? "").trim() || "—"}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function submitPayloadToWebhook(payload) {
   const webhook = import.meta.env.VITE_RESULTS_WEBHOOK_URL;
   if (!webhook) {
@@ -578,6 +765,16 @@ export default function SonuCareerAssessment() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [status, setStatus] = useState("");
+  const [isAdminMode, setIsAdminMode] = useState(parseAdminMode());
+  const [storedResult, setStoredResult] = useState(() => loadLocalResult());
+  const [importJson, setImportJson] = useState("");
+  const [importError, setImportError] = useState("");
+
+  useEffect(() => {
+    if (isAdminMode) {
+      setStoredResult(loadLocalResult());
+    }
+  }, [isAdminMode]);
 
   const phase1 = useMemo(() => scorePhase1(answers), [answers]);
   const life = useMemo(() => computeLifeSignals(answers), [answers]);
@@ -610,6 +807,31 @@ export default function SonuCareerAssessment() {
     });
   };
 
+  const handleImportJson = () => {
+    setImportError("");
+    if (!importJson.trim()) {
+      setImportError("Please paste valid JSON to import.");
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(importJson);
+      saveLocalResult(payload);
+      setStoredResult(payload);
+      setImportJson("");
+      setImportError("");
+    } catch (error) {
+      setImportError("Unable to parse JSON. Please check the payload format.");
+    }
+  };
+
+  const handleClearStoredResult = () => {
+    clearLocalResult();
+    setStoredResult(null);
+    setImportJson("");
+    setImportError("");
+  };
+
   const handleSubmit = async () => {
     setSubmitting(true);
     setStatus("");
@@ -631,6 +853,9 @@ export default function SonuCareerAssessment() {
       },
     };
 
+    saveLocalResult(payload);
+    setStoredResult(payload);
+
     try {
       await submitPayloadToWebhook(payload);
       setStatus(
@@ -647,6 +872,20 @@ export default function SonuCareerAssessment() {
     }
   };
 
+  if (isAdminMode) {
+    return (
+      <AdminDashboard
+        payload={storedResult}
+        importJson={importJson}
+        setImportJson={setImportJson}
+        importError={importError}
+        onImportJson={handleImportJson}
+        onClearStored={handleClearStoredResult}
+        onClose={() => setIsAdminMode(false)}
+      />
+    );
+  }
+
   if (submitted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6 text-slate-900 flex items-center justify-center">
@@ -660,6 +899,9 @@ export default function SonuCareerAssessment() {
           </p>
           <p className="mt-3 text-sm text-slate-500">
             Your responses have been securely submitted and will be analyzed privately.
+          </p>
+          <p className="mt-4 text-sm text-slate-500">
+            Owner tip: open this page with <code className="rounded bg-slate-100 px-1 py-0.5 text-slate-900">?admin=1</code> to review the stored result later.
           </p>
         </div>
       </div>
@@ -826,6 +1068,9 @@ export default function SonuCareerAssessment() {
                 <p className="mt-2 text-sm leading-6">
                   Sonu only answers the questions. No career matches or scores are shown here.
                   The results are sent privately to your webhook for later analysis.
+                </p>
+                <p className="mt-4 rounded-2xl bg-slate-950 px-4 py-3 text-sm text-white">
+                  Owner view: add <code className="rounded bg-white/10 px-1 py-0.5">?admin=1</code> to the page URL to review the latest stored result.
                 </p>
               </section>
 
